@@ -1,0 +1,14 @@
+{
+    "hidden": 145,
+    "seed": 99,
+    "batch_size": 32,
+    "K": 10,
+    "num_layers": 3,
+    "mlp_layers": 2,
+    "lr": 0.001,
+    "step_size": 0.45,
+    "dissipative_force": 0.1,
+    "epochs": 200,
+    "pos_enc": "None",
+    "pe_dim": 16
+}

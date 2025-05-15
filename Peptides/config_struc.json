@@ -1,0 +1,10 @@
+{
+    "hidden": 150,
+    "seed": 10,
+    "batch_size": 128,
+    "K": 8,
+    "num_layers": 3,
+    "mlp_layers": 2,
+    "lr": 0.005,
+    "epochs": 350
+}
