@@ -1,0 +1,59 @@
+exp:
+  exp_name: ['barbell']
+  wandb: [True]
+  num_seeds: [1]
+  device: [0]
+  seed: [93428]
+data:
+  dataset: ['barbell']
+  samples: [100]
+  task_type: ['mse_regression']
+  eval_metric: ['mse']
+  minimize: [True]
+  num_nodes: [25,50, 100]
+model:
+  model_name: ['modelnode']
+  layer_type: ['nondischeb']
+  input_dim: [1]
+  hidden_dim: [256]
+  out_dim: [1]
+  num_layers: [3]
+  act: [ 'relu' ]
+  k: [6,7,8]
+optim:
+  lr: [0.001]
+  lr_scheduler: ['ReduceLROnPlateau']
+  early_stop: [False]
+  epochs: [200]
+  batch_size: [1]
+
+
+# exp:
+#   exp_name: 'barbell'
+#   wandb: True
+#   num_seeds: 2
+#   device: [0]
+#   seed: 93428
+# data:
+#   dataset: 'barbell'
+#   samples: 100
+#   task_type: 'mse_regression'
+#   eval_metric: 'mse'
+#   minimize: True
+#   num_nodes: [50, 100]
+# model:
+#   model_name: 'modelnode'
+#   layer_type: 'Cheb'
+#   input_dim: 1
+#   hidden_dim: 256
+#   out_dim: 1
+#   num_layers: 3
+#   act: 'relu' 
+#   step: 0.1
+#   k: 5
+# optim:
+#   lr: 0.001
+#   lr_scheduler: 'ReduceLROnPlateau'
+#   early_stop: False
+#   epochs: 500
+#   batch_size: 1
