@@ -94,5 +94,3 @@ sbatch run_barb.sh
 
 Specify clique sizes and other parameters in the `configs/*.yaml` files.
 
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
