@@ -83,7 +83,7 @@ Two pipelines are provided under `Peptides/Stable/`:
 
 Adjust hyperparameters in the scripts or configuration files as needed.
 
-### Barbell Clique Model (Barbell)
+### Barbell Graphs task
 
 Launch the Barbell experiments via Slurm:
 
