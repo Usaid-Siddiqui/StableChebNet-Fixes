@@ -7,20 +7,6 @@
 - [PyTorch Geometric](https://github.com/pyg-team/pytorch_geometric)
 - [OGB](https://github.com/snap-stanford/ogb)
 
-## Project Structure
-
-```
-StableCheb/
-├── Barbell/            # Clique-based Barbell model experiments
-├── GraphProp/          # Graph property prediction scripts & configs
-├── OGB/                # Scripts for OGB datasets (arxiv, proteins)
-├── Peptides/           # Peptide function & structure prediction
-├── jacobian_cheb.py    # Jacobian analysis for Chebyshev conv
-└── README.md           # This document
-```
-
----
-
 ## Usage
 
 
