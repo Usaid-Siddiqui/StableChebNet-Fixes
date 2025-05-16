@@ -23,24 +23,6 @@ StableCheb/
 
 ## Usage
 
-### OGB Benchmarks
-
-Navigate into the `OGB` folder for dataset scripts:
-
-- **arXiv citation network**:
-  ```bash
-  python ogb_datasets.py
-  ```
-
-- **Protein–protein interaction (OGB-Proteins)**:
-  ```bash
-  python ogbproteins.py
-  ```
-
-- **OGB-Proteins with Stable-ChebNet**:
-  ```bash
-  python ogbproteins_euler.py     --model_name eulerchebnet     --hidden_channels #insert_dim     --num_layers #insert_layers     --K #insert_Khops     --lr #insert_lr
-  ```
 
 ### Graph Property Prediction (GraphProp)
 
@@ -64,6 +46,36 @@ Supported `--model_name` values:
 - `Cheb_GraphProp` (ChebNet)
 - `GCN_GraphProp` (Graph Convolutional Network)
 - `GAT_GraphProp` (Graph Attention Network)
+  
+### Barbell Graphs task
+
+Launch the Barbell experiments via Slurm:
+
+```bash
+cd Barbell
+sbatch run_barb.sh
+```
+
+Specify clique sizes and other parameters in the `configs/*.yaml` files.
+
+### OGB Benchmarks
+
+Navigate into the `OGB` folder for dataset scripts:
+
+- **arXiv citation network**:
+  ```bash
+  python ogb_datasets.py
+  ```
+
+- **Protein–protein interaction (OGB-Proteins)**:
+  ```bash
+  python ogbproteins.py
+  ```
+
+- **OGB-Proteins with Stable-ChebNet**:
+  ```bash
+  python ogbproteins_euler.py     --model_name eulerchebnet     --hidden_channels #insert_dim     --num_layers #insert_layers     --K #insert_Khops     --lr #insert_lr
+  ```
 
 ### Peptides dataset
 
@@ -83,14 +95,4 @@ Two pipelines are provided under `Peptides/Stable/`:
 
 Adjust hyperparameters in the scripts or configuration files as needed.
 
-### Barbell Graphs task
-
-Launch the Barbell experiments via Slurm:
-
-```bash
-cd Barbell
-sbatch run_barb.sh
-```
-
-Specify clique sizes and other parameters in the `configs/*.yaml` files.
 
