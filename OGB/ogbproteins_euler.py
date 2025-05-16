@@ -12,7 +12,7 @@ from torch_geometric.nn import global_add_pool
 from torch_geometric.loader import RandomNodeLoader
 from torch_geometric.nn import DeepGCNLayer, GENConv,ChebConv
 from torch_geometric.utils import scatter
-from Peptides.Euler.EulerConv import Euler_ChebConv
+from Stable.EulerConv import Euler_ChebConv
 
 ### Seed everything
 import random

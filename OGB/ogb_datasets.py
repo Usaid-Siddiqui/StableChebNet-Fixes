@@ -19,7 +19,7 @@ from torch_geometric.utils import (
     to_undirected,
 )
 import wandb 
-from Peptides.Euler_Conv import Euler_ChebConv
+from Stable.EulerConv import Euler_ChebConv
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter, )
