@@ -78,7 +78,7 @@ Two pipelines are provided under `Peptides/Stable/`:
 - **Structure Prediction**:
   ```bash
   cd Peptides/Stable
-  python ChebStable_Struct.py
+  python ChebStable_Struc.py
   ```
 
 Adjust hyperparameters in the scripts or configuration files as needed.
