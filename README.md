@@ -39,7 +39,7 @@ Navigate into the `OGB` folder for dataset scripts:
 
 - **OGB-Proteins with Stable-ChebNet**:
   ```bash
-  python ogbproteins_euler.py     --model_name eulerchebnet     --hidden_channels 100     --num_layers 2     --K 4     --lr 0.0005
+  python ogbproteins_euler.py     --model_name eulerchebnet     --hidden_channels #insert_dim     --num_layers #insert_layers     --K #insert_Khops     --lr #insert_lr
   ```
 
 ### Graph Property Prediction (GraphProp)
@@ -65,7 +65,7 @@ Supported `--model_name` values:
 - `GCN_GraphProp` (Graph Convolutional Network)
 - `GAT_GraphProp` (Graph Attention Network)
 
-### Peptide Modeling
+### Peptides dataset
 
 Two pipelines are provided under `Peptides/Stable/`:
 
