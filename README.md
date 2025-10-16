@@ -1,4 +1,11 @@
-# StableCheb
+## 📘 Paper: *Return of ChebNet — Understanding and Improving an Overlooked GNN on Long-Range Tasks*
+[**arXiv:2506.07624**](https://arxiv.org/abs/2506.07624)
+
+**Authors:** Ali Hariri, Álvaro Arroyo, Alessio Gravina, Moshe Eliasof, Carola-Bibiane Schönlieb, Davide Bacciu, Kamyar Azizzadenesheli, Xiaowen Dong, and Pierre Vandergheynst
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/your-username/StableCheb/main/assets/overview.png" alt="StableCheb Overview" width="700"/>
+</p>
 
 ---
 
