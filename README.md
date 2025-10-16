@@ -3,7 +3,7 @@
 
 **Authors:** Ali Hariri, Álvaro Arroyo, Alessio Gravina, Moshe Eliasof, Carola-Bibiane Schönlieb, Davide Bacciu, Kamyar Azizzadenesheli, Xiaowen Dong, and Pierre Vandergheynst
 
-![Alt text](assets/overview.png.png)
+![Alt text](assets/overview.png)
 ---
 
 ## Dependencies
