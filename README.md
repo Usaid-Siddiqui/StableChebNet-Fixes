@@ -1,4 +1,4 @@
-## 📘 Code of *Return of ChebNet — Understanding and Improving an Overlooked GNN on Long-Range Tasks* [📄 [Paper]](https://arxiv.org/abs/2506.07624) 
+## Code of *Return of ChebNet — Understanding and Improving an Overlooked GNN on Long-Range Tasks* [📄 [Paper]](https://arxiv.org/abs/2506.07624) 
 ## *⭐ NeurIPS 2025 Spotlight*
 
 
