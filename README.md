@@ -4,7 +4,7 @@
 **Authors:** Ali Hariri, Álvaro Arroyo, Alessio Gravina, Moshe Eliasof, Carola-Bibiane Schönlieb, Davide Bacciu, Kamyar Azizzadenesheli, Xiaowen Dong, and Pierre Vandergheynst
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ahariri13/StableCheb/main/assets/overview.png" alt="StableCheb Overview" width="700"/>
+  <img src="https://raw.githubusercontent.com/ahariri13/StableCheb/assets/overview.png" alt="StableCheb Overview" width="700"/>
 </p>
 
 ---
