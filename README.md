@@ -1,5 +1,5 @@
-## 📘 Paper: *Return of ChebNet — Understanding and Improving an Overlooked GNN on Long-Range Tasks*
-[**arXiv:2506.07624**](https://arxiv.org/abs/2506.07624)
+## 📘 Paper: *Return of ChebNet — Understanding and Improving an Overlooked GNN on Long-Range Tasks* [📄 [Paper]](https://arxiv.org/abs/2506.07624)
+
 
 **Authors:** Ali Hariri, Álvaro Arroyo, Alessio Gravina, Moshe Eliasof, Carola-Bibiane Schönlieb, Davide Bacciu, Kamyar Azizzadenesheli, Xiaowen Dong, and Pierre Vandergheynst
 
