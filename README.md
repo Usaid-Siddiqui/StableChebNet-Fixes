@@ -86,10 +86,11 @@ Two pipelines are provided under `Peptides/Stable/`:
 
 Adjust hyperparameters in the scripts or configuration files as needed.
 
-📖 Citation
+## 📖 Citation
 
 If you use this code or build upon this work, please cite:
 
+```bibtex
 @article{hariri2025return,
   title={Return of ChebNet: Understanding and Improving an Overlooked GNN on Long Range Tasks},
   author={Hariri, Ali and Arroyo, {\'A}lvaro and Gravina, Alessio and Eliasof, Moshe and Sch{\"o}nlieb, Carola-Bibiane and Bacciu, Davide and Azizzadenesheli, Kamyar and Dong, Xiaowen and Vandergheynst, Pierre},
