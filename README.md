@@ -15,40 +15,6 @@
 ## Usage
 
 
-### Graph Property Prediction (GraphProp)
-
-1. Edit your conda environment in `GraphProp/graph_prop_pred/run_models.sh` (see line 13).
-2. Run the shell script to launch experiments:
-
-   ```bash
-   cd GraphProp/graph_prop_pred
-   bash run_models.sh
-   ```
-
-3. Or invoke `main.py` directly:
-
-   ```bash
-   python -u main.py      --data_name GraphProp      --task ecc      --model_name Euler_GraphProp
-   ```
-
-Supported `--model_name` values:
-
-- `Euler_GraphProp` (Stable-ChebNet)
-- `Cheb_GraphProp` (ChebNet)
-- `GCN_GraphProp` (Graph Convolutional Network)
-- `GAT_GraphProp` (Graph Attention Network)
-  
-### Barbell Graphs task
-
-Launch the Barbell experiments via Slurm:
-
-```bash
-cd Barbell
-sbatch run_barb.sh
-```
-
-Specify clique sizes and other parameters in the `configs/*.yaml` files.
-
 ### OGB Benchmarks
 
 Navigate into the `OGB` folder for dataset scripts:
@@ -85,6 +51,42 @@ Two pipelines are provided under `Peptides/Stable/`:
   ```
 
 Adjust hyperparameters in the scripts or configuration files as needed.
+
+
+### Graph Property Prediction (GraphProp)
+
+1. Edit your conda environment in `GraphProp/graph_prop_pred/run_models.sh` (see line 13).
+2. Run the shell script to launch experiments:
+
+   ```bash
+   cd GraphProp/graph_prop_pred
+   bash run_models.sh
+   ```
+
+3. Or invoke `main.py` directly:
+
+   ```bash
+   python -u main.py      --data_name GraphProp      --task ecc      --model_name Euler_GraphProp
+   ```
+
+Supported `--model_name` values:
+
+- `Euler_GraphProp` (Stable-ChebNet)
+- `Cheb_GraphProp` (ChebNet)
+- `GCN_GraphProp` (Graph Convolutional Network)
+- `GAT_GraphProp` (Graph Attention Network)
+  
+### Barbell Graphs task
+
+Launch the Barbell experiments via Slurm:
+
+```bash
+cd Barbell
+sbatch run_barb.sh
+```
+
+Specify clique sizes and other parameters in the `configs/*.yaml` files.
+
 
 ## 📖 Citation
 
