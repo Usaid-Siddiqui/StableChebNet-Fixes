@@ -1,9 +1,6 @@
 ## Code of *Return of ChebNet — Understanding and Improving an Overlooked GNN on Long-Range Tasks* [📄 [Paper]](https://arxiv.org/abs/2506.07624) 
 ## *⭐ NeurIPS 2025 Spotlight*
 
-
-**Authors:** Ali Hariri, Álvaro Arroyo, Alessio Gravina, Moshe Eliasof, Carola-Bibiane Schönlieb, Davide Bacciu, Kamyar Azizzadenesheli, Xiaowen Dong, and Pierre Vandergheynst
-
 ![Alt text](assets/overview.png)
 ---
 
