@@ -14,7 +14,8 @@
 set -euo pipefail
 
 module load cuda 2>/dev/null || true         # adjust to your cluster's module system
-source "${VENV:-$HOME/fejer-venv}/bin/activate"
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate "${CONDA_ENV:-fejer}"
 
 export WANDB_MODE="${WANDB_MODE:-offline}"    # 'online' if you ran `wandb login`
 
