@@ -1,0 +1,8 @@
+# Fejer-damping Stable-ChebNet experiments.
+# Install torch matching your cluster's CUDA first (see README_EXPERIMENTS.md),
+# then the rest. Versions below are known-good with the patched code (torch 2.x).
+torch>=2.1
+torch_geometric>=2.5
+numpy>=1.24
+wandb>=0.16
+matplotlib>=3.7

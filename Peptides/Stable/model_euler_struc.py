@@ -25,13 +25,13 @@ pe_type = config.get("pos_enc", "laplacian")
 dim=9
 class EulerModelstruc(torch.nn.Module):
 
-    def __init__(self,hidden_dims,K,num_layers,mlp_layers,num_classes,step_size,dissipative_force):
+    def __init__(self,hidden_dims,K,num_layers,mlp_layers,num_classes,step_size,dissipative_force,damping_kernel='dirichlet'):
         super(EulerModelstruc, self).__init__()
 
         self.lin=Linear(dim,hidden_dims)
         self.convs = torch.nn.ModuleList()
         for _ in range(num_layers): #- 1):
-            self.convs.append(Euler_ChebConv(hidden_dims, hidden_dims,K,step_size,dissipative_force))
+            self.convs.append(Euler_ChebConv(hidden_dims, hidden_dims,K,step_size,dissipative_force,damping_kernel=damping_kernel))
 
         self.bano1 = torch.nn.BatchNorm1d(num_features= hidden_dims)
         self.bano2 = torch.nn.BatchNorm1d(num_features= hidden_dims)

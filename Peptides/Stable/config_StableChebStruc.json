@@ -8,6 +8,7 @@
     "lr": 0.005,
     "step_size": 0.3,
     "dissipative_force": 0.005,
+    "damping_kernel": "dirichlet",
     "epochs": 350,
     "pe_type": "None",
     "pos_enc": "None",

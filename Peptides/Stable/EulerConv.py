@@ -41,6 +41,7 @@ class Euler_ChebConv(MessagePassing):
         K: int,
         step_size: float = 0.1,
         dissipation_force: float = 0.0,
+        damping_kernel: str = 'dirichlet',
         bias: bool = True,
         **kwargs,
     ):
@@ -48,16 +49,34 @@ class Euler_ChebConv(MessagePassing):
         super().__init__(**kwargs)
 
         assert K > 0
+        assert damping_kernel in ('dirichlet', 'uniform', 'fejer')
 
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.normalization = 'sym'
         self.e = step_size
         self.g = dissipation_force
+        self.damping_kernel = damping_kernel
         self.lins = torch.nn.ModuleList()
-        for _ in range(K):
+        for k in range(K):
+            # How the gamma damping enters, per order k. The learnable antisymmetric
+            # filter W_k - W_k^T is NEVER reweighted (that is a no-op: the net relearns
+            # the scale). Only the gamma term is touched.
+            #   dirichlet (paper): full gamma folded into every order -> applied damping
+            #       sum_k T_k(lambda-tilde) is a sign-changing Dirichlet kernel.
+            #   uniform (fix, best): NO per-order gamma here; gamma is instead applied
+            #       ONCE to the signal in forward(). This is "pull gamma out of the sum"
+            #       -> flat damping s == 1, so gamma = 1/eps zeroes (1-eps*gamma*s_i)^2
+            #       on every mode simultaneously.
+            #   fejer: scale gamma on order k by (1 - k/K) -> Fejer kernel, s >= 1/2.
+            if damping_kernel == 'fejer':
+                g_k = self.g * (1.0 - k / K)
+            elif damping_kernel == 'uniform':
+                g_k = 0.0                      # gamma applied once in forward(), not per-order
+            else:                              # 'dirichlet' -- paper, unchanged
+                g_k = self.g
             self.lins.append(Linear(in_channels, out_channels, bias=False, weight_initializer='glorot'))
-            register_parametrization(self.lins[-1],'weight', AntiSymmetric(dissipative_force=self.g))
+            register_parametrization(self.lins[-1],'weight', AntiSymmetric(dissipative_force=g_k))
 
         if bias:
             self.bias = Parameter(Tensor(out_channels))
@@ -148,6 +167,8 @@ class Euler_ChebConv(MessagePassing):
             out = out + self.bias
 
         out = x + self.e * out
+        if self.damping_kernel == 'uniform':
+            out = out - self.e * self.g * x     # gamma applied ONCE to the signal, not per-order
 
         if eig:
           eigs_r = []
@@ -199,6 +220,8 @@ class Euler_ChebConv(MessagePassing):
             out = out + self.bias
 
         out = x + self.e * out
+        if self.damping_kernel == 'uniform':
+            out = out - self.e * self.g * x     # gamma applied ONCE to the signal, not per-order
         return out.view(-1)
 
     def message(self, x_j: Tensor, norm: Tensor) -> Tensor:

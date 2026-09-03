@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+data/
+wandb/
+results/*.csv
+# locally downloaded LRGB datasets (re-downloaded on the cluster)
+Peptides/Stable/peptides-func
+Peptides/Stable/peptides-struct
+Peptides/Stable/*.zip

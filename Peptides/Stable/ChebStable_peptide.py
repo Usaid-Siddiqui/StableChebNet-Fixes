@@ -1,8 +1,8 @@
 import torch
 from torch_geometric.datasets import LRGBDataset
+import os
 import os.path as osp
 import torch_geometric.transforms as T
-import wandb
 from torch_geometric.loader import DataLoader
 import math
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -12,6 +12,9 @@ import json
 from utils import pe,eval_ap
 from utils import *
 from model_euler import EulerModel
+from experiment_utils import get_wandb, probe_model, probe_epochs, maybe_subset, append_csv
+
+wandb = get_wandb()
 
 
 # Load JSON config
@@ -28,8 +31,18 @@ parser.add_argument('--num_layers', type=int, default=config.get("num_layers"))
 parser.add_argument('--mlp_layers', type=int, default=config.get("mlp_layers"))
 parser.add_argument('--step_size', type=float, default=config.get("step_size"))
 parser.add_argument('--dissipative_force', type=float, default=config.get("dissipative_force"))
+parser.add_argument('--damping_kernel', type=str, default=config.get("damping_kernel", "dirichlet"),
+                    choices=['dirichlet', 'uniform', 'fejer'])
 parser.add_argument('--lr', type=float, default=config.get("lr"))
 parser.add_argument('--epochs', type=int, default=config.get("epochs"))
+# ---- experiment plumbing (do not affect the paper's default path) ----
+parser.add_argument('--max_graphs', type=int, default=None,
+                    help='subset train/val/test to this many graphs (dry run only)')
+parser.add_argument('--results_csv', type=str, default=os.environ.get("RESULTS_CSV", ""),
+                    help='append the final result row to this CSV')
+parser.add_argument('--run_name', type=str, default="", help='wandb run name / CSV tag')
+parser.add_argument('--wandb_project', type=str, default=os.environ.get("WANDB_PROJECT", "Peptide_Compare"))
+parser.add_argument('--no_spectral', action='store_true', help='disable the ||J||_2 probe')
 args = parser.parse_args()
 
 from torch_geometric.transforms import AddLaplacianEigenvectorPE
@@ -42,6 +55,10 @@ dataset1 = LRGBDataset(root='./', name=my_dataset, transform=tf, split="train")#
 validation_set1 = LRGBDataset(root='./', name=my_dataset,transform=tf, split="val")#.shuffle()
 test_set1 = LRGBDataset(root='./', name=my_dataset,transform=tf, split="test")#.shuffle()
 
+dataset1 = maybe_subset(dataset1, args.max_graphs)
+validation_set1 = maybe_subset(validation_set1, args.max_graphs)
+test_set1 = maybe_subset(test_set1, args.max_graphs)
+
 num_feats=dataset1.num_node_features
 num_classes=dataset1.num_classes
 
@@ -51,7 +68,7 @@ trainloader = DataLoader(dataset1, batch_size=args.batch_size, shuffle=True,drop
 valoader = DataLoader(validation_set1, batch_size=args.batch_size, shuffle=False)
 testloader = DataLoader(test_set1, batch_size=args.batch_size, shuffle=False)
 
-model = EulerModel(args.hidden,args.K,args.num_layers,args.mlp_layers,num_classes,args.step_size,args.dissipative_force).to(device)
+model = EulerModel(args.hidden,args.K,args.num_layers,args.mlp_layers,num_classes,args.step_size,args.dissipative_force,damping_kernel=args.damping_kernel).to(device)
 
 from torch.optim import AdamW
 # --- Optimizer ---------------------------------------------------------
@@ -71,7 +88,6 @@ scheduler = ReduceLROnPlateau(
     factor=0.5,            # reduce_factor
     patience=20,           # schedule_patience for Peptides
     min_lr=1e-5,           # min_lr
-    verbose=True           # logs each lr change
 )
 
 criterion = torch.nn.CrossEntropyLoss()
@@ -81,9 +97,10 @@ total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 print(f"Number of trainable parameters: {total_params}")
 
+_run_name = args.run_name or f"{args.damping_kernel}_g{args.dissipative_force}_s{args.seed}_K{args.K}"
 wandb.init(
-project= "Peptide_Compare",#"PeptideFunc2025",
-name="ChebEuler_"+str(args.K)+"",
+project= args.wandb_project,
+name=_run_name,
 config=config,
 )
 
@@ -91,6 +108,11 @@ wandb.log({"Params": total_params})
 
 # Optionally, log the args (if modified via command line)
 wandb.config.update(args,allow_val_change=True)
+
+# ---- fixed batch for the ||J||_2 spectral probe (section 13) ----
+_probe_epochs = set() if args.no_spectral else set(probe_epochs(args.epochs))
+_probe_batch = next(iter(DataLoader(dataset1, batch_size=args.batch_size, shuffle=False))) if _probe_epochs else None
+_spectral_csv = os.path.splitext(args.results_csv)[0] + "_spectral.csv" if args.results_csv else ""
 
 # import torch.optim as optim
 # from torch.optim import Adagrad, AdamW, Optimizer
@@ -130,7 +152,22 @@ checkpoint_path='./SmartRewire/ChebNet_Baseline/temp_weights/best_epoch_'+str(to
 
 temp=0
 for epoch in range(args.epochs):
-  print(torch.version.cuda)
+
+  # ---- ||J||_2 spectral probe at selected epochs (theory <-> training link) ----
+  if epoch in _probe_epochs:
+      try:
+          jn = probe_model(model, _probe_batch, device, args.hidden)
+          for li, val in enumerate(jn):
+              wandb.log({f"specnorm/layer{li}": val, "Epoch": epoch})
+          wandb.log({"specnorm/max": max(jn), "Epoch": epoch})
+          print(f"[probe] epoch {epoch:03d}  ||J||_2 per layer: "
+                + ", ".join(f"{v:.4f}" for v in jn) + f"   (max {max(jn):.4f})")
+          if _spectral_csv:
+              append_csv(_spectral_csv, {"run": _run_name, "kernel": args.damping_kernel,
+                  "gamma": args.dissipative_force, "seed": args.seed, "epoch": epoch,
+                  **{f"layer{li}": v for li, v in enumerate(jn)}, "max_layer": max(jn)})
+      except Exception as e:
+          print(f"[probe] epoch {epoch} failed: {e}")
 
   model.train()
   correct = 0
@@ -202,7 +239,6 @@ for epoch in range(args.epochs):
   wandb.log({"Val Loss": val_loss})
   wandb.log({"Epoch": epoch})
 
-device="cuda"
 # checkpoint = torch.load(checkpoint_path)
 # model.load_state_dict(checkpoint)
 
@@ -228,4 +264,15 @@ with torch.no_grad():
   test_perf = eval_ap(y_true=y_trues, y_pred=y_preds)
 
 wandb.log({"Test Acc": test_perf})
+
+print(f"[result] kernel={args.damping_kernel} gamma={args.dissipative_force} seed={args.seed} "
+      f"K={args.K} eps={args.step_size}  test_AP={float(test_perf):.4f}  best_val_AP={float(temp):.4f} @epoch {when}")
+if args.results_csv:
+    append_csv(args.results_csv, {
+        "run": _run_name, "kernel": args.damping_kernel, "gamma": args.dissipative_force,
+        "seed": args.seed, "K": args.K, "eps": args.step_size, "hidden": args.hidden,
+        "num_layers": args.num_layers, "epochs": args.epochs,
+        "test_AP": float(test_perf), "best_val_AP": float(temp), "best_epoch": int(when),
+    })
+
 wandb.finish()

@@ -159,7 +159,6 @@ scheduler = ReduceLROnPlateau(
     factor=0.5,            # reduce_factor
     patience=20,           # schedule_patience for Peptides
     min_lr=1e-5,           # min_lr
-    verbose=True           # logs each lr change
 )
 
 criterion = torch.nn.CrossEntropyLoss()
