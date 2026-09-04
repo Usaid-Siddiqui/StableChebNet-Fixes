@@ -43,6 +43,9 @@ parser.add_argument('--results_csv', type=str, default=os.environ.get("RESULTS_C
 parser.add_argument('--run_name', type=str, default="", help='wandb run name / CSV tag')
 parser.add_argument('--wandb_project', type=str, default=os.environ.get("WANDB_PROJECT", "Peptide_Compare"))
 parser.add_argument('--no_spectral', action='store_true', help='disable the ||J||_2 probe')
+parser.add_argument('--ckpt_dir', type=str, default=os.environ.get("CKPT_DIR", "checkpoints"),
+                    help='directory for best-val checkpoints (one .pth per run)')
+parser.add_argument('--no_checkpoint', action='store_true', help='disable checkpoint save/load')
 args = parser.parse_args()
 
 from torch_geometric.transforms import AddLaplacianEigenvectorPE
@@ -143,12 +146,8 @@ _spectral_csv = os.path.splitext(args.results_csv)[0] + "_spectral.csv" if args.
 # scheduler=cosine_with_warmup_scheduler(optimizer,num_warmup_epochs=5,max_epoch=300)
 
 
-import datetime
-today_date=datetime.datetime.now()
-## hour and minute 
-today_date=today_date.strftime("%Y-%m-%d-%H-%M")
-
-checkpoint_path='./SmartRewire/ChebNet_Baseline/temp_weights/best_epoch_'+str(today_date)+'.pth'
+os.makedirs(args.ckpt_dir, exist_ok=True)
+checkpoint_path = os.path.join(args.ckpt_dir, _run_name + ".pth")
 
 temp=0
 for epoch in range(args.epochs):
@@ -229,7 +228,8 @@ for epoch in range(args.epochs):
   if val_perf>=temp:
     temp=val_perf
     when=epoch
-    # torch.save(model.state_dict(), checkpoint_path)
+    if not args.no_checkpoint:
+        torch.save(model.state_dict(), checkpoint_path)
 
 
   print(f'Epoch: {epoch:03d}, Loss: {loss.item():.4f},Train Acc: {train_perf:.4f}, Val_Loss: {val_loss.item():.4f},Val Acc: {val_perf:.4f}')
@@ -239,8 +239,10 @@ for epoch in range(args.epochs):
   wandb.log({"Val Loss": val_loss})
   wandb.log({"Epoch": epoch})
 
-# checkpoint = torch.load(checkpoint_path)
-# model.load_state_dict(checkpoint)
+# load the best-val checkpoint for the test eval (standard protocol, not final-epoch)
+if not args.no_checkpoint and os.path.exists(checkpoint_path):
+    model.load_state_dict(torch.load(checkpoint_path, map_location=device), strict=False)
+    print(f"[checkpoint] loaded best-val model from {checkpoint_path} (epoch {when}, val {temp:.4f})")
 
 test_precision=0
 tr=[]

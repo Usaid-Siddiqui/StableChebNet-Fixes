@@ -48,6 +48,8 @@ parser.add_argument('--results_csv', type=str, default=os.environ.get("RESULTS_C
 parser.add_argument('--run_name', type=str, default="")
 parser.add_argument('--wandb_project', type=str, default=os.environ.get("WANDB_PROJECT", "PeptideStruc2025"))
 parser.add_argument('--no_spectral', action='store_true')
+parser.add_argument('--ckpt_dir', type=str, default=os.environ.get("CKPT_DIR", "checkpoints"))
+parser.add_argument('--no_checkpoint', action='store_true')
 args = parser.parse_args()
 
 
@@ -132,6 +134,9 @@ _probe_epochs = set() if args.no_spectral else set(probe_epochs(args.epochs))
 _probe_batch = next(iter(DataLoader(dataset1, batch_size=args.batch_size, shuffle=False))) if _probe_epochs else None
 _spectral_csv = os.path.splitext(args.results_csv)[0] + "_spectral.csv" if args.results_csv else ""
 
+os.makedirs(args.ckpt_dir, exist_ok=True)
+checkpoint_path = os.path.join(args.ckpt_dir, _run_name + ".pth")
+
 temp=10000000
 when=0
 for epoch in range(args.epochs):
@@ -215,7 +220,8 @@ for epoch in range(args.epochs):
   if val_perf<temp:
     temp=val_perf
     when=epoch
-    # torch.save(model.state_dict(), checkpoint_path)
+    if not args.no_checkpoint:
+        torch.save(model.state_dict(), checkpoint_path)
 
 
   print(f'Epoch: {epoch:03d}, Loss: {loss.item():.4f},Train Acc: {train_perf:.4f}, Val_Loss: {val_loss.item():.4f},Val Acc: {val_perf:.4f}')
@@ -223,8 +229,10 @@ for epoch in range(args.epochs):
   wandb.log({"Val perf": val_perf})
   wandb.log({"Epoch": epoch})
 
-# checkpoint = torch.load(checkpoint_path)
-# model.load_state_dict(checkpoint)
+# load the best-val checkpoint for the test eval (standard protocol, not final-epoch)
+if not args.no_checkpoint and os.path.exists(checkpoint_path):
+    model.load_state_dict(torch.load(checkpoint_path, map_location=device), strict=False)
+    print(f"[checkpoint] loaded best-val model from {checkpoint_path} (epoch {when}, val {temp:.4f})")
 
 
 totalTest=0

@@ -10,6 +10,7 @@ cd "$(dirname "$0")/../Peptides/Stable"
 
 export WANDB_MODE="${WANDB_MODE:-offline}"
 export WANDB_PROJECT="${WANDB_PROJECT:-Fejer_Peptides_func}"
+export CKPT_DIR="${CKPT_DIR:-$(cd ../.. && pwd)/results/checkpoints}"
 RESULTS="${RESULTS_CSV:-$(cd ../.. && pwd)/results/phase1_func.csv}"
 mkdir -p "$(dirname "$RESULTS")"
 
