@@ -150,6 +150,9 @@ os.makedirs(args.ckpt_dir, exist_ok=True)
 checkpoint_path = os.path.join(args.ckpt_dir, _run_name + ".pth")
 
 temp=0
+when=0
+diverged=False
+diverged_epoch=-1
 for epoch in range(args.epochs):
 
   # ---- ||J||_2 spectral probe at selected epochs (theory <-> training link) ----
@@ -183,12 +186,22 @@ for epoch in range(args.epochs):
 
     loss = criterion(classify, data.y)  # Compute the loss
 
+    if not torch.isfinite(loss):
+        # forward Euler diverged (expected at depth); stop cleanly, keep best-val ckpt
+        print(f"[diverged] non-finite training loss at epoch {epoch}; stopping early "
+              f"(best-val epoch {when}, val {temp:.4f})")
+        diverged = True; diverged_epoch = epoch
+        break
+
     loss.backward()
 
     optimizer.step()
 
     real.append(data.y)
     pred.append(classify)
+
+  if diverged:
+    break
 
   y_true = torch.cat(real, dim=0)
   y_pred = torch.cat(pred, dim=0)
@@ -260,21 +273,25 @@ with torch.no_grad():
 
   y_preds = torch.cat(tp, dim=0)
   y_trues = torch.cat(tr, dim=0)
-
-  y_preds = torch.cat(tp, dim=0)
-  y_trues = torch.cat(tr, dim=0)
-  test_perf = eval_ap(y_true=y_trues, y_pred=y_preds)
+  try:
+      test_perf = eval_ap(y_true=y_trues, y_pred=y_preds)
+  except ValueError:
+      # no usable (finite) checkpoint -- run diverged before any val improvement
+      test_perf = float('nan')
 
 wandb.log({"Test Acc": test_perf})
 
 print(f"[result] kernel={args.damping_kernel} gamma={args.dissipative_force} seed={args.seed} "
-      f"K={args.K} eps={args.step_size}  test_AP={float(test_perf):.4f}  best_val_AP={float(temp):.4f} @epoch {when}")
+      f"K={args.K} eps={args.step_size} layers={args.num_layers}  test_AP={float(test_perf):.4f}  "
+      f"best_val_AP={float(temp):.4f} @epoch {when}  diverged={diverged}"
+      + (f" @epoch {diverged_epoch}" if diverged else ""))
 if args.results_csv:
     append_csv(args.results_csv, {
         "run": _run_name, "kernel": args.damping_kernel, "gamma": args.dissipative_force,
         "seed": args.seed, "K": args.K, "eps": args.step_size, "hidden": args.hidden,
         "num_layers": args.num_layers, "epochs": args.epochs,
         "test_AP": float(test_perf), "best_val_AP": float(temp), "best_epoch": int(when),
+        "diverged": int(diverged), "diverged_epoch": int(diverged_epoch),
     })
 
 wandb.finish()

@@ -34,6 +34,7 @@ for cfg in $CONFIGS; do
   for L in $LAYERS; do
     tag="L${L}_${kernel}_g${gamma}_s${SEED}"
     echo ">>> depth  kernel=$kernel gamma=$gamma layers=$L"
+    # a single run crashing (e.g. an unhandled divergence) must not abort the sweep
     python3 ChebStable_peptide.py \
       --seed "$SEED" \
       --damping_kernel "$kernel" \
@@ -41,7 +42,8 @@ for cfg in $CONFIGS; do
       --num_layers "$L" \
       --epochs "$EPOCHS" \
       --results_csv "$OUTDIR/${tag}.csv" \
-      --run_name "depth_${tag}" $SUBSET
+      --run_name "depth_${tag}" $SUBSET \
+      || echo "[warn] run failed (non-zero exit): $tag -- continuing sweep"
   done
 done
 
@@ -54,8 +56,13 @@ rows = []
 for f in files:
     rows += list(csv.DictReader(open(f)))
 if rows:
+    fieldnames = []            # union of keys across runs, preserving first-seen order
+    for r in rows:
+        for k in r:
+            if k not in fieldnames:
+                fieldnames.append(k)
     with open(summary, "w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        w = csv.DictWriter(fh, fieldnames=fieldnames, restval="")
         w.writeheader(); w.writerows(rows)
     print(f"\n== Depth sweep done. {len(rows)} runs -> {summary} ==")
     print("Summarize by depth:  python3 experiments/summarize_depth.py " + summary)

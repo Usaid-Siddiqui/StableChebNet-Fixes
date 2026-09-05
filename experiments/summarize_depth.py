@@ -38,6 +38,18 @@ def main(path):
         print(f"\nbest_val_AP by depth x kernel:")
         pivot(rows, "best_val_AP")
 
+    # divergence map: did forward-Euler blow up to NaN, and at which epoch?
+    if any(r.get("diverged", "") not in ("", "0") for r in rows):
+        print("\ndiverged? (D=blew up to NaN / .=trained through) by depth x kernel:")
+        kernels = sorted({r["kernel"] for r in rows})
+        layers = sorted({int(r["num_layers"]) for r in rows})
+        cell = {(int(r["num_layers"]), r["kernel"]):
+                ("D@" + str(r.get("diverged_epoch", "?")) if str(r.get("diverged", "0")) == "1" else ".")
+                for r in rows}
+        print(f"    {'layers':>6s} " + "".join(f"{k:>14s}" for k in kernels))
+        for L in layers:
+            print(f"    {L:>6d} " + "".join(f"{cell.get((L,k),'-'):>14s}" for k in kernels))
+
     # final ||J||_2 from the per-run spectral files, if present. Try a few layouts:
     # <summary_dir>/depth/ (default OUTDIR), <summary_dir>/, or an explicit argv[2].
     base = os.path.dirname(os.path.abspath(path))

@@ -139,6 +139,8 @@ checkpoint_path = os.path.join(args.ckpt_dir, _run_name + ".pth")
 
 temp=10000000
 when=0
+diverged=False
+diverged_epoch=-1
 for epoch in range(args.epochs):
 
   # ---- ||J||_2 spectral probe at selected epochs ----
@@ -173,7 +175,13 @@ for epoch in range(args.epochs):
 
     mask = ~torch.isnan(data.y)
 
-    loss = (classify[mask].squeeze() - data.y[mask]).abs().mean() 
+    loss = (classify[mask].squeeze() - data.y[mask]).abs().mean()
+
+    if not torch.isfinite(loss):
+        print(f"[diverged] non-finite training loss at epoch {epoch}; stopping early "
+              f"(best-val epoch {when}, val {temp:.4f})")
+        diverged = True; diverged_epoch = epoch
+        break
 
     loss.backward()
 
@@ -184,6 +192,9 @@ for epoch in range(args.epochs):
     optimizer.step()
 
     totalLoss+=loss
+
+  if diverged:
+    break
 
   totalLoss=totalLoss / (i+1)
 
@@ -259,13 +270,16 @@ wandb.log({"Test Loss": test_loss})
 wandb.log({"Test perf": test_perf})
 
 print(f"[result] kernel={args.damping_kernel} gamma={args.dissipative_force} seed={args.seed} "
-      f"K={args.K} eps={args.step_size}  test_MAE={float(test_loss):.4f}  best_val_MAE={float(temp):.4f} @epoch {when}")
+      f"K={args.K} eps={args.step_size} layers={args.num_layers}  test_MAE={float(test_loss):.4f}  "
+      f"best_val_MAE={float(temp):.4f} @epoch {when}  diverged={diverged}"
+      + (f" @epoch {diverged_epoch}" if diverged else ""))
 if args.results_csv:
     append_csv(args.results_csv, {
         "run": _run_name, "kernel": args.damping_kernel, "gamma": args.dissipative_force,
         "seed": args.seed, "K": args.K, "eps": args.step_size, "hidden": args.hidden,
         "num_layers": args.num_layers, "epochs": args.epochs,
         "test_MAE": float(test_loss), "best_val_MAE": float(temp), "best_epoch": int(when),
+        "diverged": int(diverged), "diverged_epoch": int(diverged_epoch),
     })
 
 wandb.finish()
