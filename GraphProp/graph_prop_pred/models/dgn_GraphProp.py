@@ -247,6 +247,7 @@ class Euler_ChebConv(MessagePassing):
         K: int,
         step_size: float = 0.5,
         dissipation_force: float = 0.01,
+        damping_kernel: str = 'dirichlet',
         bias: bool = True,
         **kwargs,
     ):
@@ -254,16 +255,28 @@ class Euler_ChebConv(MessagePassing):
         super().__init__(**kwargs)
 
         assert K > 0
+        assert damping_kernel in ('dirichlet', 'uniform', 'fejer')
 
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.normalization = 'sym'
         self.e = step_size
         self.g = dissipation_force
+        self.damping_kernel = damping_kernel
         self.lins = torch.nn.ModuleList()
-        for _ in range(K):
+        for k in range(K):
+            # gamma handling per order k (filter W_k - W_k^T is NEVER reweighted):
+            #   dirichlet (paper): full gamma per order -> sign-changing Dirichlet kernel.
+            #   uniform: no per-order gamma; gamma applied ONCE to the signal in forward().
+            #   fejer: scale gamma by (1 - k/K) -> nonnegative Fejer kernel.
+            if damping_kernel == 'fejer':
+                g_k = self.g * (1.0 - k / K)
+            elif damping_kernel == 'uniform':
+                g_k = 0.0
+            else:
+                g_k = self.g
             self.lins.append(Linear(in_channels, out_channels, bias=False, weight_initializer='glorot'))
-            register_parametrization(self.lins[-1],'weight', AntiSymmetric(dissipative_force=self.g))
+            register_parametrization(self.lins[-1],'weight', AntiSymmetric(dissipative_force=g_k))
 
         if bias:
             self.bias = Parameter(Tensor(out_channels))
@@ -354,6 +367,8 @@ class Euler_ChebConv(MessagePassing):
             out = out + self.bias
 
         out = x + self.e * out
+        if self.damping_kernel == 'uniform':
+            out = out - self.e * self.g * x     # gamma applied ONCE to the signal
 
         if eig:
           eigs_r = []
@@ -405,6 +420,8 @@ class Euler_ChebConv(MessagePassing):
             out = out + self.bias
 
         out = x + self.e * out
+        if self.damping_kernel == 'uniform':
+            out = out - self.e * self.g * x     # gamma applied ONCE to the signal
         return out.view(-1)
 
     def message(self, x_j: Tensor, norm: Tensor) -> Tensor:
@@ -598,7 +615,7 @@ class DGN_GraphProp(Module):
                  num_layers: int = 1,
                  node_level_task: bool = False,
                  conv_layer: str = 'GCNConv',
-                 
+                 damping_kernel: str = 'dirichlet',
                  alpha: Optional[float] = None) -> None:
         super().__init__()
 
@@ -656,10 +673,10 @@ class DGN_GraphProp(Module):
               self.conv.append(NonDissipv2_ChebConv(in_channels = inp,K=K)) 
             elif conv_layer == 'Euler2':
                 self.conv.append(Euler_ChebConv(in_channels = inp,
-                                                     out_channels = inp,K=K,step_size=epsilon,dissipation_force=dissipation_force))
+                                                     out_channels = inp,K=K,step_size=epsilon,dissipation_force=dissipation_force,damping_kernel=damping_kernel))
             elif conv_layer == 'Euler':
               self.conv.append(Euler_ChebConv(in_channels = inp,
-                                                 out_channels = inp,K=K,step_size=epsilon,dissipation_force=dissipation_force)) 
+                                                 out_channels = inp,K=K,step_size=epsilon,dissipation_force=dissipation_force,damping_kernel=damping_kernel)) 
               
             #   print("NonDissipito")
             # else:

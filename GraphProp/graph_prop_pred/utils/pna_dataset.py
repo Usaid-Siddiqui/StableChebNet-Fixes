@@ -31,7 +31,7 @@ class GraphPropDataset(InMemoryDataset):
         self.task = task
         super().__init__(root)
         self.pre_transform = pre_transform
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
         print(f'Loaded {self.processed_paths[0]}')
 
     @property
@@ -40,7 +40,7 @@ class GraphPropDataset(InMemoryDataset):
 
     def process(self):
         (adj, features, 
-         node_labels, graph_labels) = torch.load(open(join(self.root, f'./data/pna_dataset_{self.dim}.pkl'),'rb'))
+         node_labels, graph_labels) = torch.load(open(join(self.root, f'./data/pna_dataset_{self.dim}.pkl'),'rb'), weights_only=False)
 
         # node_labels ["eccentricity", "graph_laplacian_features", "sssp"]
         # graph_labels ["is_connected", "diameter", "spectral_radius"]

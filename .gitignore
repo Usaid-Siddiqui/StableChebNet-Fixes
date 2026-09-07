@@ -10,3 +10,7 @@ Peptides/Stable/checkpoints/
 Peptides/Stable/peptides-func
 Peptides/Stable/peptides-struct
 Peptides/Stable/*.zip
+# GraphProp: extracted dataset (re-extracted from data.tar.gz) and checkpoints
+GraphProp/graph_prop_pred/data/
+GraphProp/graph_prop_pred/gp_checkpoints/
+results/gp_checkpoints/

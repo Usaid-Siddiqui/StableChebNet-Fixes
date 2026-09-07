@@ -31,12 +31,13 @@ def main(path):
     rows = list(csv.DictReader(open(path)))
     if not rows:
         print("empty summary"); return
-    metric = "test_AP" if "test_AP" in rows[0] else "test_MAE"
+    metric = next((m for m in ("test_AP", "test_MAE", "test_logMSE") if m in rows[0]), "test_AP")
+    val_key = next((v for v in ("best_val_AP", "best_val_MAE", "best_val_logMSE") if v in rows[0]), None)
     print(f"\n{metric} by depth x kernel  ({'higher' if metric=='test_AP' else 'lower'} better):")
     pivot(rows, metric)
-    if "best_val_AP" in rows[0]:
-        print(f"\nbest_val_AP by depth x kernel:")
-        pivot(rows, "best_val_AP")
+    if val_key:
+        print(f"\n{val_key} by depth x kernel:")
+        pivot(rows, val_key)
 
     # divergence map: did forward-Euler blow up to NaN, and at which epoch?
     if any(r.get("diverged", "") not in ("", "0") for r in rows):
