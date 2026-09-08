@@ -31,9 +31,10 @@ def main(path):
     rows = list(csv.DictReader(open(path)))
     if not rows:
         print("empty summary"); return
-    metric = next((m for m in ("test_AP", "test_MAE", "test_logMSE") if m in rows[0]), "test_AP")
-    val_key = next((v for v in ("best_val_AP", "best_val_MAE", "best_val_logMSE") if v in rows[0]), None)
-    print(f"\n{metric} by depth x kernel  ({'higher' if metric=='test_AP' else 'lower'} better):")
+    metric = next((m for m in ("test_AP", "test_acc", "test_MAE", "test_logMSE") if m in rows[0]), "test_AP")
+    val_key = next((v for v in ("best_val_AP", "best_val_acc", "best_val_MAE", "best_val_logMSE") if v in rows[0]), None)
+    higher = metric in ("test_AP", "test_acc")
+    print(f"\n{metric} by depth x kernel  ({'higher' if higher else 'lower'} better):")
     pivot(rows, metric)
     if val_key:
         print(f"\n{val_key} by depth x kernel:")

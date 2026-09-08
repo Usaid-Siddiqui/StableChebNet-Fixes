@@ -14,3 +14,5 @@ Peptides/Stable/*.zip
 GraphProp/graph_prop_pred/data/
 GraphProp/graph_prop_pred/gp_checkpoints/
 results/gp_checkpoints/
+LongRange/ring_checkpoints/
+results/ring_checkpoints/
