@@ -54,13 +54,9 @@ def main(path):
 
     # final ||J||_2 from the per-run spectral files, if present. Try a few layouts:
     # <summary_dir>/depth/ (default OUTDIR), <summary_dir>/, or an explicit argv[2].
-    base = os.path.dirname(os.path.abspath(path))
-    candidates = [sys.argv[2]] if len(sys.argv) > 2 else [os.path.join(base, "depth"), base]
-    spec = []
-    for d in candidates:
-        spec = glob.glob(os.path.join(d, "*_spectral.csv"))
-        if spec:
-            break
+    # only report ||J|| when an explicit spectral dir is passed (argv[2]) -- avoids
+    # accidentally globbing an unrelated sweep's spectral files.
+    spec = glob.glob(os.path.join(sys.argv[2], "*_spectral.csv")) if len(sys.argv) > 2 else []
     if spec:
         jrows = []
         for f in spec:
