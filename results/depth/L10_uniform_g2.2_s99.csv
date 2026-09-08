@@ -1,0 +1,2 @@
+run,kernel,gamma,seed,K,eps,hidden,num_layers,epochs,test_AP,best_val_AP,best_epoch,diverged,diverged_epoch
+depth_L10_uniform_g2.2_s99,uniform,2.2,99,10,0.45,145,10,200,0.6336543768648222,0.668007598665451,184,0,-1

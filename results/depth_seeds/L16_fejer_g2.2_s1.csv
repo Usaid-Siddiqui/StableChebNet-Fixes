@@ -1,0 +1,2 @@
+run,kernel,gamma,seed,K,eps,hidden,num_layers,epochs,test_AP,best_val_AP,best_epoch,diverged,diverged_epoch
+ds_L16_fejer_g2.2_s1,fejer,2.2,1,10,0.45,145,16,200,0.6364650828606409,0.6561633128898687,147,0,-1

@@ -1,0 +1,2 @@
+run,kernel,gamma,seed,K,eps,hidden,num_layers,epochs,test_AP,best_val_AP,best_epoch,diverged,diverged_epoch
+ds_L16_dirichlet_g0.1_s0,dirichlet,0.1,0,10,0.45,145,16,200,0.3793975910559947,0.40149648273646815,28,1,35
