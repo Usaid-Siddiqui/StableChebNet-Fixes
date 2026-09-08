@@ -15,12 +15,13 @@ cd "$(dirname "$0")/../GraphProp/graph_prop_pred"
 
 export CKPT_DIR="${CKPT_DIR:-$(cd ../.. && pwd)/results/gp_checkpoints}"
 TASK="${TASK:-dist}"                              # dist (SSSP) | ecc | diam
-RESULTS="${RESULTS_CSV:-$(cd ../.. && pwd)/results/graphprop_${TASK}.csv}"
-mkdir -p "$(dirname "$RESULTS")"
-# start clean so re-runs don't accumulate stale rows (columns are fixed here)
-[ -f "$RESULTS" ] && { echo "[note] removing existing $RESULTS for a clean sweep"; rm -f "$RESULTS"; }
-
 SEED="${SEED:-41}"
+# task + seed in the filename -> different tasks/seeds never clobber each other
+RESULTS="${RESULTS_CSV:-$(cd ../.. && pwd)/results/graphprop_${TASK}_s${SEED}.csv}"
+mkdir -p "$(dirname "$RESULTS")"
+# clear only THIS exact (task,seed) file so a re-run is clean but other runs are preserved
+[ -f "$RESULTS" ] && { echo "[note] removing existing $RESULTS for a clean re-run"; rm -f "$RESULTS"; }
+
 EPOCHS="${EPOCHS:-1500}"
 PATIENCE="${PATIENCE:-200}"
 K="${K:-4}"

@@ -11,14 +11,16 @@ cd "$(dirname "$0")/.."
 
 export CKPT_DIR="${CKPT_DIR:-$(pwd)/results/ring_checkpoints}"
 RING="${RING:-16}"                                  # required depth = RING/2 (=8 by default)
-RESULTS="${RESULTS_CSV:-$(pwd)/results/ring_P${RING}.csv}"
-mkdir -p "$(dirname "$RESULTS")"
-[ -f "$RESULTS" ] && { echo "[note] removing existing $RESULTS for a clean sweep"; rm -f "$RESULTS"; }
-
 SEED="${SEED:-0}"
+EPSILON="${EPSILON:-2.5}"    # step size in the instability regime (calibrated: separates the arms)
+# ring + eps + seed all in the filename -> different runs NEVER clobber each other
+RESULTS="${RESULTS_CSV:-$(pwd)/results/ring_P${RING}_e${EPSILON}_s${SEED}.csv}"
+mkdir -p "$(dirname "$RESULTS")"
+# clear only THIS exact (ring,eps,seed) file so a re-run is clean but every other run is preserved
+[ -f "$RESULTS" ] && { echo "[note] removing existing $RESULTS for a clean re-run"; rm -f "$RESULTS"; }
+
 EPOCHS="${EPOCHS:-300}"
 K="${K:-2}"
-EPSILON="${EPSILON:-2.5}"    # step size in the instability regime (calibrated: separates the arms)
 HIDDEN="${HIDDEN:-32}"
 CLASSES="${CLASSES:-5}"
 # required depth = RING/2; sweep from below it (all fail: can't reach) to well past it
@@ -37,7 +39,7 @@ for cfg in $CONFIGS; do
       --epsilon "$EPSILON" --gamma "$gamma" --damping_kernel "$kernel" \
       --hidden "$HIDDEN" --epochs "$EPOCHS" --seed "$SEED" \
       --results_csv "$RESULTS" \
-      --run_name "ring${RING}_${kernel}_g${gamma}_L${L}_s${SEED}" \
+      --run_name "ring${RING}_e${EPSILON}_${kernel}_g${gamma}_L${L}_s${SEED}" \
       || echo "[warn] run failed (non-zero exit): $kernel/L$L -- continuing"
   done
 done
