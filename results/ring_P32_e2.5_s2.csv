@@ -1,0 +1,10 @@
+run,ring,req_depth,kernel,gamma,num_layers,K,epsilon,hidden,seed,test_acc,best_val_acc,chance,best_epoch,diverged,diverged_epoch
+ring32_e2.5_dirichlet_g0.01_L20_s2,32,16,dirichlet,0.01,20,2,2.5,32,2,0.208,0.22,0.2,292,0,-1
+ring32_e2.5_dirichlet_g0.01_L24_s2,32,16,dirichlet,0.01,24,2,2.5,32,2,0.208,0.22,0.2,297,0,-1
+ring32_e2.5_dirichlet_g0.01_L28_s2,32,16,dirichlet,0.01,28,2,2.5,32,2,0.208,0.22,0.2,295,0,-1
+ring32_e2.5_uniform_g1.25_L20_s2,32,16,uniform,1.25,20,2,2.5,32,2,0.208,0.22,0.2,292,0,-1
+ring32_e2.5_uniform_g1.25_L24_s2,32,16,uniform,1.25,24,2,2.5,32,2,0.208,0.22,0.2,297,0,-1
+ring32_e2.5_uniform_g1.25_L28_s2,32,16,uniform,1.25,28,2,2.5,32,2,0.414,0.42,0.2,173,0,-1
+ring32_e2.5_fejer_g1.25_L20_s2,32,16,fejer,1.25,20,2,2.5,32,2,0.612,0.614,0.2,115,0,-1
+ring32_e2.5_fejer_g1.25_L24_s2,32,16,fejer,1.25,24,2,2.5,32,2,0.794,0.8,0.2,47,0,-1
+ring32_e2.5_fejer_g1.25_L28_s2,32,16,fejer,1.25,28,2,2.5,32,2,1.0,1.0,0.2,299,0,-1

@@ -1,0 +1,13 @@
+run,ring,req_depth,kernel,gamma,num_layers,K,epsilon,hidden,seed,test_acc,best_val_acc,chance,best_epoch,diverged,diverged_epoch
+ring24_e2.5_dirichlet_g0.01_L12_s2,24,12,dirichlet,0.01,12,2,2.5,32,2,0.208,0.22,0.2,294,0,-1
+ring24_e2.5_dirichlet_g0.01_L14_s2,24,12,dirichlet,0.01,14,2,2.5,32,2,0.208,0.22,0.2,299,0,-1
+ring24_e2.5_dirichlet_g0.01_L16_s2,24,12,dirichlet,0.01,16,2,2.5,32,2,0.208,0.22,0.2,292,0,-1
+ring24_e2.5_dirichlet_g0.01_L20_s2,24,12,dirichlet,0.01,20,2,2.5,32,2,0.614,0.608,0.2,32,0,-1
+ring24_e2.5_uniform_g1.25_L12_s2,24,12,uniform,1.25,12,2,2.5,32,2,0.208,0.22,0.2,294,0,-1
+ring24_e2.5_uniform_g1.25_L14_s2,24,12,uniform,1.25,14,2,2.5,32,2,0.208,0.22,0.2,299,0,-1
+ring24_e2.5_uniform_g1.25_L16_s2,24,12,uniform,1.25,16,2,2.5,32,2,0.208,0.22,0.2,292,0,-1
+ring24_e2.5_uniform_g1.25_L20_s2,24,12,uniform,1.25,20,2,2.5,32,2,0.404,0.394,0.2,21,0,-1
+ring24_e2.5_fejer_g1.25_L12_s2,24,12,fejer,1.25,12,2,2.5,32,2,0.208,0.22,0.2,294,0,-1
+ring24_e2.5_fejer_g1.25_L14_s2,24,12,fejer,1.25,14,2,2.5,32,2,0.414,0.42,0.2,44,0,-1
+ring24_e2.5_fejer_g1.25_L16_s2,24,12,fejer,1.25,16,2,2.5,32,2,0.594,0.612,0.2,134,0,-1
+ring24_e2.5_fejer_g1.25_L20_s2,24,12,fejer,1.25,20,2,2.5,32,2,1.0,1.0,0.2,299,0,-1
