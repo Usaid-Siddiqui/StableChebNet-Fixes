@@ -1,0 +1,4 @@
+run,kernel,gamma,seed,K,eps,hidden,num_layers,epochs,test_AP,best_val_AP,best_epoch,diverged,diverged_epoch
+L16_dirichlet_g2.2_s0,dirichlet,2.2,0,10,0.45,145,16,200,0.6486989558020564,0.657534326797341,169,0,-1
+L16_uniform_g2.2_s0,uniform,2.2,0,10,0.45,145,16,200,0.37145081683494185,0.3918891223051926,24,1,39
+L16_fejer_g2.2_s0,fejer,2.2,0,10,0.45,145,16,200,0.6486371365027145,0.6575040054752004,170,0,-1
