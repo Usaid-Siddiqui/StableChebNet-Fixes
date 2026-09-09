@@ -23,17 +23,19 @@ EPOCHS="${EPOCHS:-300}"
 K="${K:-2}"
 HIDDEN="${HIDDEN:-32}"
 CLASSES="${CLASSES:-5}"
-# required depth = RING/2; sweep from below it (all fail: can't reach) to well past it
+# required depth = ceil((RING/2)/(K-1)); sweep from below it (all fail: cannot reach) to past it
 LAYERS="${LAYERS:-2 4 6 8 10 12 16}"
+HOPS=$(( RING / 2 ))
+REQ_DEPTH=$(( (HOPS + K - 2) / (K - 1) ))   # ceil(hops/(K-1))
 # dirichlet at paper-like small gamma; the fixes at a fixed moderate gamma
 # (kernel shape, not gamma magnitude, is what we are comparing)
 CONFIGS="${CONFIGS:-dirichlet:0.01 uniform:1.25 fejer:1.25}"
 
-echo "== Ring[P=$RING, req_depth=$((RING/2))] sweep: layers={$LAYERS} configs={$CONFIGS} -> $RESULTS =="
+echo "== Ring[P=$RING, K=$K, hops=$HOPS, req_depth=$REQ_DEPTH] sweep: layers={$LAYERS} configs={$CONFIGS} -> $RESULTS =="
 for cfg in $CONFIGS; do
   kernel="${cfg%%:*}"; gamma="${cfg##*:}"
   for L in $LAYERS; do
-    echo ">>> ring  kernel=$kernel gamma=$gamma layers=$L (req $((RING/2)))"
+    echo ">>> ring  kernel=$kernel gamma=$gamma layers=$L (req $REQ_DEPTH)"
     python3 LongRange/run_ring.py \
       --ring "$RING" --num_classes "$CLASSES" --num_layers "$L" --K "$K" \
       --epsilon "$EPSILON" --gamma "$gamma" --damping_kernel "$kernel" \

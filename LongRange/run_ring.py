@@ -167,14 +167,17 @@ def main():
             print(f"early-stopped at epoch {epoch} (best {best_epoch})")
             break
 
+    # one layer reaches K-1 hops, target is ring//2 hops away
+    hops = args.ring // 2
+    req_depth = -(-hops // max(args.K - 1, 1))      # ceil division
     chance = 1.0 / C
-    print(f"[result] ring={args.ring} req_depth={args.ring//2} kernel={args.damping_kernel} "
+    print(f"[result] ring={args.ring} req_depth={req_depth} kernel={args.damping_kernel} "
           f"gamma={args.gamma} layers={args.num_layers} seed={args.seed}  "
           f"test_acc={best_test:.4f} best_val_acc={best_val:.4f} (chance {chance:.3f}) "
           f"@epoch {best_epoch}  diverged={diverged}" + (f" @epoch {diverged_epoch}" if diverged else ""))
     if args.results_csv:
         append_csv(args.results_csv, {
-            "run": _run, "ring": args.ring, "req_depth": args.ring // 2,
+            "run": _run, "ring": args.ring, "req_depth": req_depth, "hops": hops,
             "kernel": args.damping_kernel, "gamma": args.gamma, "num_layers": args.num_layers,
             "K": args.K, "epsilon": args.epsilon, "hidden": args.hidden, "seed": args.seed,
             "test_acc": round(float(best_test), 4), "best_val_acc": round(float(best_val), 4),
