@@ -17,12 +17,6 @@ GraphProp/graph_prop_pred/gp_checkpoints/
 results/gp_checkpoints/
 LongRange/ring_checkpoints/
 results/ring_checkpoints/
-# intermediate working docs -- only the base README.md is tracked;
-# one final write-up will be added alongside it at the end.
-FEJER_FIX_README.md
-FEJER_FIX_README_AMENDMENT1.md
-README_EXPERIMENTS.md
-FINDINGS.md
 writeup/
 # external audit notes (kept locally, not part of the repo)
 audit_*/
