@@ -24,3 +24,6 @@ FEJER_FIX_README_AMENDMENT1.md
 README_EXPERIMENTS.md
 FINDINGS.md
 writeup/
+# external audit notes (kept locally, not part of the repo)
+audit_*/
+.DS_Store
