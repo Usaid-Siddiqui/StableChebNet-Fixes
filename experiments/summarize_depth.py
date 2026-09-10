@@ -13,10 +13,23 @@ from collections import defaultdict
 def pivot(rows, value_key, cast=float):
     kernels, layers = set(), set()
     cell = {}
+    seen = {}          # (layers,kernel) -> list of (gamma, seed, value) for collision detection
     for r in rows:
         k, L = r["kernel"], int(r["num_layers"])
         kernels.add(k); layers.add(L)
         cell[(L, k)] = cast(r[value_key])
+        seen.setdefault((L, k), []).append(
+            (r.get("gamma", "?"), r.get("seed", "?"), r[value_key]))
+    # a cell is only meaningful if ONE row maps to it; otherwise we'd silently
+    # show the last row and hide the rest (they differ in gamma and/or seed).
+    clashes = {c: v for c, v in seen.items() if len(v) > 1}
+    if clashes:
+        print(f"  !! WARNING: {len(clashes)} (layers,kernel) cell(s) have multiple rows "
+              f"differing in gamma/seed; only the LAST is shown. Split the file or "
+              f"summarize by gamma/seed instead:")
+        for (L, k), v in sorted(clashes.items())[:6]:
+            detail = ", ".join(f"g={g}/s={s}:{val}" for g, s, val in v)
+            print(f"     L{L} {k}: {detail}")
     kernels = sorted(kernels); layers = sorted(layers)
     print(f"    {'layers':>6s} " + "".join(f"{k:>14s}" for k in kernels))
     for L in layers:
