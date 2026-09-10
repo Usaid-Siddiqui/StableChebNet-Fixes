@@ -2,6 +2,26 @@
 ## *⭐ NeurIPS 2025 Spotlight*
 
 ![Alt text](assets/overview.png)
+
+---
+
+> **Note on this fork.** This branch investigates the dissipation term `−γI` in Eq. 9.
+> Because it is folded into each Chebyshev order's weight matrix rather than applied once
+> to the signal, the *effective* damping is `γ·Σ_k T_k(L̃)` — a Dirichlet kernel that
+> changes sign for `K ≥ 3` (negative on ≈¼ of the spectrum at `K=10`). Since any `γ > 0`
+> amplifies those negative modes, worst-case-gain tuning drives `γ → 0`, matching the
+> paper's own grid search; at `γ ≈ 0` the model cannot be trained at 16 layers (diverges
+> in 3/4 seeds). **The attempted fix did not succeed.** Fejér reweighting of the damping
+> coefficients, which makes the kernel non-negative, turns out to be unnecessary: at
+> matched `γ = 2.2` the original Dirichlet kernel trains just as well (0.6330 ± 0.0099 vs
+> Fejér's 0.6397 ± 0.0067 over 4 seeds — a gap below the measured 0.0118 noise floor), and
+> on some tasks it is better. The naive alternative of pulling `γ` out of the sum is
+> actively harmful. The outcome is therefore a **correctness-and-tuning observation, not an
+> improved model**: the damping coefficient is hard to tune well, but adequate `γ` — not a
+> reshaped kernel — is what matters, and there are no benchmark gains over the original.
+> Full write-up, including the hypotheses we falsified and the known flaws in our own
+> experiments, is in [`FINDINGS.md`](FINDINGS.md).
+
 ---
 
 ## Dependencies
